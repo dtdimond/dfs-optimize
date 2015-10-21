@@ -3,21 +3,20 @@ class Player < ActiveRecord::Base
   has_many :salaries
   has_many :caches, as: :cacheable
 
-#  def self.get_data
-#    if self.caches.last
-#      get_data_from_cache (or database)
-#    else
-#      get_data_from_gem
-#      set_cache_timer
-#    end
-#
-#
-#
-#
-#    FFNerd.api_key = "test"
-#    qb_data = FFNerd.weekly_rankings("QB")
-#    FFNerd.players
-#    binding.pry
-#
-#  end
+  def self.populate_data
+    FFNerd.players.each do |player|
+      player = Player.create(name: player.display_name,
+                             position: player.position, team: player.team)
+      Cache.create(cacheable: player, cached_time: Time.now)
+    end
+  end
+
+  def refresh_data
+    Player.populate_data if cache_refresh?
+  end
+
+  def cache_refresh?
+    last = Cache.last_updated(self)
+    last && last > 60.minutes.ago ? false : true
+  end
 end

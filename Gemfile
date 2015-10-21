@@ -31,6 +31,8 @@ group :development, :test do
   gem 'quiet_assets'
   gem 'pry'
   gem 'sqlite3'
+  gem 'webmock'
+  gem 'vcr'
 end
 
 group :production do

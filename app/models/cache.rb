@@ -1,10 +1,8 @@
 class Cache < ActiveRecord::Base
   belongs_to :cacheable, polymorphic: true
 
-  VALID_CACHEABLE_TYPES = ["Player","Salary","Projection"]
-
-  def self.last_updated(cacheable_type)
-    return nil unless VALID_CACHEABLE_TYPES.include?(cacheable_type)
-    Cache.where("cacheable_type = ?", cacheable_type).maximum("cached_time")
+  def self.last_updated(record)
+    Cache.where("cacheable_id = ? AND cacheable_type = ?", record,
+                record.class.to_s).maximum("cached_time")
   end
 end
