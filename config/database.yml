@@ -1,11 +1,11 @@
 development:
   adapter: postgresql
   encoding: unicode
-  database: myflix_development
+  database: dfs_development
   pool: 5
 
 test:
   adapter: postgresql
   encoding: unicode
-  database: myflix_test
+  database: dfs_test
   pool: 5
