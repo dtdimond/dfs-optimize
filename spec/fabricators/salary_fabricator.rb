@@ -1,5 +1,5 @@
 Fabricator(:salary) do
   value { Faker::Number.number(4) }
-  platform { ["FanDuel","DraftKings","Yahoo"].sample }
+  platform { ["fanduel","draftkings","yahoo"].sample }
   player
 end

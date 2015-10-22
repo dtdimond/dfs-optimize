@@ -2,8 +2,8 @@ class Salary < ActiveRecord::Base
   belongs_to :player
   has_many :caches, as: :cacheable
 
-  def self.refresh_data(platform="FanDuel")
-    Salary.populate_data(platform) if Salary.any_cache_refresh?
+  def self.refresh_data(platform="fanduel")
+    Salary.populate_data(platform) if Salary.any_cache_refresh?(platform)
   end
 
   private
@@ -19,11 +19,14 @@ class Salary < ActiveRecord::Base
     end
   end
 
-  def self.any_cache_refresh?
-    Salary.all.each do |salary|
+  def self.any_cache_refresh?(platform)
+    records = Salary.where("platform = '#{platform}'")
+    records.each do |salary|
       return true if Salary.cache_refresh?(salary)
     end
-    Salary.any? ? false : true #refresh if no records
+
+    #refresh if no records
+    records.any? ? false : true
   end
 
   def self.cache_refresh?(salary)

@@ -3,7 +3,7 @@
     .col-md-4.col-md-offset-1
       .row.top-row
         .col-md-4
-          %button.btn.btn-success Refresh Data
+          =button_to "Refresh Data", player_update_path, class: "btn btn-success"
         .col-md-8.align-bottom
           %p Data Freshness: 30 minutes old
       .row

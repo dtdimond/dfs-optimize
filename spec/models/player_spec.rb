@@ -19,6 +19,9 @@ describe Player do
       end
 
       expect(Player.second.name).to eq("Derek Anderson")
+      expect(Player.second.player_id).to eq(2)
+      expect(Player.second.position).to eq("QB")
+      expect(Player.second.team).to eq("BAL")
     end
 
     it 'gets all new player data if there are no records' do
@@ -38,6 +41,30 @@ describe Player do
       end
 
       expect(Player.second).to be_nil
+    end
+
+    it 'gets no new player data if it is called twice (on second call)' do
+      VCR.use_cassette 'player/refresh_data' do
+        Player.refresh_data
+      end
+      player = Player.first
+      expect(player.name).to eq("Derek Anderson")
+
+      VCR.use_cassette 'player/refresh_data' do
+        Player.refresh_data
+      end
+      expect(Player.first.updated_at).to eq(player.updated_at)
+    end
+
+    it 'gets new player data if a cached record is too old, but for wrong platform' do
+      player = Fabricate(:player)
+      cache = Fabricate(:cache, cacheable: player, cached_time: 67.minutes.ago)
+
+      VCR.use_cassette 'player/refresh_data' do
+        Player.refresh_data
+      end
+
+      expect(Player.second.name).to eq("Derek Anderson")
     end
   end
 

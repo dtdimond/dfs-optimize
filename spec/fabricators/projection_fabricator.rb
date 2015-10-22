@@ -4,6 +4,6 @@ Fabricator(:projection) do
   average { avg }
   min { avg - (avg / 4) }
   max { avg + (avg / 4) }
-  platform { ["FanDuel","DraftKings","Yahoo"].sample }
+  platform { ["fanduel","draftkings","yahoo"].sample }
   player
 end

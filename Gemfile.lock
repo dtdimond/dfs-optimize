@@ -70,7 +70,7 @@ GEM
     fabrication (2.14.1)
     faker (1.5.0)
       i18n (~> 0.5)
-    fantasy_football_nerd (1.1.3)
+    fantasy_football_nerd (1.2.1)
     font-awesome-rails (4.4.0.0)
       railties (>= 3.2, < 5.0)
     globalid (0.3.6)
@@ -214,7 +214,7 @@ DEPENDENCIES
   coffee-rails (~> 4.0.0)
   fabrication
   faker
-  fantasy_football_nerd
+  fantasy_football_nerd (= 1.2.1)
   font-awesome-rails
   haml-rails
   jbuilder (~> 1.2)

@@ -11,7 +11,7 @@ class Player < ActiveRecord::Base
   def self.populate_data
     ActiveRecord::Base.transaction do
       FFNerd.players.each do |player|
-        player = Player.create(name: player.display_name,
+        player = Player.create(name: player.display_name, player_id: player.player_id,
                                position: player.position, team: player.team)
         Cache.create(cacheable: player, cached_time: Time.now)
       end
