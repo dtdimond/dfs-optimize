@@ -2,22 +2,24 @@ require 'spec_helper'
 
 describe Salary do
   it { should belong_to(:player) }
-  it { should have_many(:caches) }
 
   let!(:old_api_key) { FFNerd.api_key }
   before { FFNerd.api_key = "test" }
   after { FFNerd.api_key = old_api_key }
 
   describe ".refresh_data" do
-    it 'gets all new salary data if record is too old and updates the cached timestamp' do
-      salary = Fabricate(:salary)
-      cache = Fabricate(:cache, cacheable: salary, cached_time: 62.minutes.ago)
+    it 'gets all new salary data if an existing salary record is too old' do
+      Fabricate(:salary, platform: "fanduel", updated_at: not_too_new)
+      Fabricate(:salary, platform: "fanduel", updated_at: too_new)
 
       VCR.use_cassette 'salary/refresh_data' do
         Salary.refresh_data
       end
 
-      expect(Salary.second.value).to eq(8000)
+      expect(Salary.first.value).to eq(8000)
+      expect(Salary.first.week).to eq(4)
+      expect(Salary.first.platform).to eq("fanduel")
+      expect(Salary.first.player_id).to eq(35)
     end
 
     it 'gets all new salary data if there are no records' do
@@ -28,20 +30,19 @@ describe Salary do
       expect(Salary.first.value).to eq(8000)
     end
 
-    it 'gets no new salary data if cached record is too recent' do
-      salary = Fabricate(:salary, platform: "fanduel")
-      cache = Fabricate(:cache, cacheable: salary, cached_time: 57.minutes.ago)
+    it 'gets no new salary data if all existing salary records are too recent' do
+      Fabricate(:salary, platform: "fanduel", updated_at: too_new)
+      Fabricate(:salary, platform: "fanduel", updated_at: too_new)
 
       VCR.use_cassette 'salary/refresh_data' do
         Salary.refresh_data
       end
 
-      expect(Salary.second).to be_nil
+      expect(Salary.third).to be_nil
     end
 
-    it 'gets new salary data if a cached record is too old, but for wrong platform' do
-      salary = Fabricate(:salary, platform: "draftkings")
-      cache = Fabricate(:cache, cacheable: salary, cached_time: 67.minutes.ago)
+    it 'gets new salary data if a record is old enough, but for wrong platform' do
+      Fabricate(:salary, platform: "draftkings", updated_at: not_too_new)
 
       VCR.use_cassette 'salary/refresh_data' do
         Salary.refresh_data
@@ -49,35 +50,40 @@ describe Salary do
 
       expect(Salary.second.value).to eq(8000)
     end
+
+    it 'only deletes records for the given platform on refresh' do
+      Fabricate(:salary, platform: "draftkings", updated_at: too_new)
+      salary_fd = Fabricate(:salary, platform: "fanduel", updated_at: not_too_new)
+
+      VCR.use_cassette 'salary/refresh_data' do
+        Salary.refresh_data("fanduel")
+      end
+
+      expect(Salary.first.platform).to eq("draftkings")
+      expect(Salary.second.updated_at).not_to be_near_to_time(salary_fd.updated_at, 30.seconds)
+    end
   end
 
   describe ".populate_data" do
-    it 'populates the salary database and updates the cached timestamp' do
+    it 'populates the salary database' do
       VCR.use_cassette 'salary/populate_data' do
         Salary.populate_data("fanduel")
       end
 
       expect(Salary.first.value).to eq(8000)
-      expect(Cache.last_updated(Salary.first)).to be_near_to_time(Time.now, 30.seconds)
+      expect((Salary.first.updated_at)).to be_near_to_time(Time.now, 30.seconds)
     end
   end
 
-  describe ".cache_refresh?" do
-    it 'returns false if last cached_time is less than 60mins old' do
-      salary = Fabricate(:salary)
-      cache = Fabricate(:cache, cacheable: salary, cached_time: Time.now)
-      expect(Salary.cache_refresh?(salary)).to be false
+  describe "#refresh?" do
+    it 'returns false if updated_at is less than 60mins old' do
+      salary = Fabricate(:salary, updated_at: too_new)
+      expect(salary.refresh?).to be false
     end
 
-    it 'returns true if last cached_time is greater than 60mins old' do
-      salary = Fabricate(:salary)
-      cache = Fabricate(:cache, cacheable: salary, cached_time: 62.minutes.ago)
-      expect(Salary.cache_refresh?(salary)).to be true
-    end
-
-    it 'returns true if there are no caches for the record' do
-      salary = Fabricate(:salary)
-      expect(Salary.cache_refresh?(salary)).to be true
+    it 'returns true if updated_at is greater than 60mins old' do
+      salary = Fabricate(:salary, updated_at: not_too_new)
+      expect(salary.refresh?).to be true
     end
   end
 end
