@@ -5,6 +5,11 @@ class Projection < ActiveRecord::Base
     Projection.populate_data(platform) if Projection.any_refresh?(platform)
   end
 
+  def self.freshness
+    max = Projection.maximum("updated_at")
+    max ? max  : nil
+  end
+
   def refresh?
     updated_at && updated_at > 60.minutes.ago ? false : true
   end
@@ -20,7 +25,7 @@ class Projection < ActiveRecord::Base
         max = proj.projections["aggressive"]["projected_points"]
         min = proj.projections["conservative"]["projected_points"]
 
-        p = Projection.create(average: avg, week: week, platform: platform,
+        p = Projection.create(average: avg, week: week, platform: platform, salary: proj.salary,
                               player_id: proj.player_id, average: avg, min: min, max: max)
       end
     end

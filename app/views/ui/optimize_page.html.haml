@@ -5,7 +5,8 @@
         .col-md-4
           =button_to "Refresh Data", player_update_path, class: "btn btn-success"
         .col-md-8.align-bottom
-          %p Data Freshness: 30 minutes old
+          %p Data Freshness:
+          = time_ago_in_words Projection.freshness if Projection.freshness
       .row
         .col-md-12
           %h1.title Optimize Lineup

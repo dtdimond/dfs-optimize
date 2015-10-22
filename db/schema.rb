@@ -11,18 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151021225721) do
+ActiveRecord::Schema.define(version: 20151022165725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "caches", force: :cascade do |t|
-    t.integer  "cacheable_id"
-    t.string   "cacheable_type"
-    t.datetime "cached_time"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "players", force: :cascade do |t|
     t.string   "name"
@@ -42,6 +34,7 @@ ActiveRecord::Schema.define(version: 20151021225721) do
     t.integer  "player_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "salary"
   end
 
   create_table "salaries", force: :cascade do |t|

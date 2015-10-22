@@ -1,6 +1,5 @@
 class Player < ActiveRecord::Base
   has_many :projections
-  has_many :salaries
 
   def self.refresh_data
     Player.populate_data if Player.any_refresh?

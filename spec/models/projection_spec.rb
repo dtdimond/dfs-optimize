@@ -16,6 +16,10 @@ describe Projection do
         Projection.refresh_data
       end
 
+      expect(Projection.first.salary).to eq(8000)
+      expect(Projection.first.week).to eq(4)
+      expect(Projection.first.platform).to eq("fanduel")
+      expect(Projection.first.player_id).to eq(35)
       expect(Projection.first.average).to eq(16.5)
     end
 
@@ -24,17 +28,22 @@ describe Projection do
         Projection.refresh_data
       end
 
+      expect(Projection.first.salary).to eq(8000)
+      expect(Projection.first.week).to eq(4)
+      expect(Projection.first.platform).to eq("fanduel")
+      expect(Projection.first.player_id).to eq(35)
       expect(Projection.first.average).to eq(16.5)
     end
 
     it 'gets no new proj data if all existing proj records are too recent' do
-      Fabricate(:projection, platform: "fanduel", updated_at: too_new)
+      proj = Fabricate(:projection, platform: "fanduel", updated_at: too_new)
       Fabricate(:projection, platform: "fanduel", updated_at: too_new)
 
       VCR.use_cassette 'projection/refresh_data' do
         Projection.refresh_data
       end
 
+      expect(Projection.first.average).to eq(proj.average)
       expect(Projection.third).to be_nil
     end
 

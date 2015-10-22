@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe Player do
   it { should have_many(:projections) }
-  it { should have_many(:salaries) }
 
   let!(:old_api_key) { FFNerd.api_key }
   before { FFNerd.api_key = "test" }
