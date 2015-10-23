@@ -71,7 +71,24 @@ describe Projection do
     end
   end
 
-  describe ".populate_data" do
+  describe '.freshness' do
+
+  end
+
+  describe 'optimal_lineup' do
+    it 'tests' do
+      create_players("QB", 3, "fanduel")
+      create_players("RB", 3, "fanduel")
+      create_players("WR", 3, "fanduel")
+      create_players("TE", 3, "fanduel")
+      create_players("K", 3, "fanduel")
+      create_players("DEF", 3, "fanduel")
+
+      Projection.optimal_lineup
+    end
+  end
+
+  describe '.populate_data' do
     it 'populates the proj database' do
       VCR.use_cassette 'projection/populate_data' do
         Projection.populate_data("fanduel")
@@ -92,5 +109,12 @@ describe Projection do
       proj = Fabricate(:projection, updated_at: not_too_new)
       expect(proj.refresh?).to be true
     end
+  end
+end
+
+def create_players(position, number, platform)
+  for i in 0..number
+    player = Fabricate(:player, position: position)
+    Fabricate(:projection, player: player, week: 1, platform: platform)
   end
 end

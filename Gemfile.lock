@@ -150,6 +150,7 @@ GEM
     rake (10.4.2)
     rdoc (4.2.0)
       json (~> 1.4)
+    rglpk (0.4.0)
     rspec-collection_matchers (1.0.0)
       rspec-expectations (>= 2.99.0.beta1)
     rspec-core (2.99.0)
@@ -224,6 +225,7 @@ DEPENDENCIES
   quiet_assets
   rails (= 4.2.4)
   rails_12factor
+  rglpk
   rspec-rails
   sass-rails
   sdoc
