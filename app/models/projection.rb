@@ -21,19 +21,12 @@ class Projection < ActiveRecord::Base
     # Cost constraint (salary_cap)
     # Num qbs, rbs, wrs, tes, ks, defs constraint
     rows = best.add_rows(7)
-    rows[0].name = "cost_constraint"
     rows[0].set_bounds(Rglpk::GLP_UP, 0, salary_cap)
-    rows[1].name = "qb_constraint"
     rows[1].set_bounds(Rglpk::GLP_DB, 0, num_qbs)
-    rows[2].name = "rb_constraint"
     rows[2].set_bounds(Rglpk::GLP_DB, 0, num_rbs)
-    rows[3].name = "wr_constraint"
     rows[3].set_bounds(Rglpk::GLP_DB, 0, num_wrs)
-    rows[4].name = "te_constraint"
     rows[4].set_bounds(Rglpk::GLP_DB, 0, num_tes)
-    rows[5].name = "k_constraint"
     rows[5].set_bounds(Rglpk::GLP_DB, 0, num_ks)
-    rows[6].name = "def_constraint"
     rows[6].set_bounds(Rglpk::GLP_DB, 0, num_defs)
 
     #Get all players for the appropriate week/dfs site
