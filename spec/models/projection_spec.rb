@@ -76,15 +76,46 @@ describe Projection do
   end
 
   describe 'optimal_lineup' do
-    it 'tests' do
-      create_players("QB", 3, "fanduel")
-      create_players("RB", 3, "fanduel")
-      create_players("WR", 3, "fanduel")
-      create_players("TE", 3, "fanduel")
-      create_players("K", 3, "fanduel")
-      create_players("DEF", 3, "fanduel")
+    it 'sets a lineup with the appropriate number of slots filled' do
+      create_players("QB", rand(5) + 4, "fanduel")
+      create_players("RB", rand(5) + 4, "fanduel")
+      create_players("WR", rand(5) + 4, "fanduel")
+      create_players("TE", rand(5) + 4, "fanduel")
+      create_players("K", rand(5) + 4, "fanduel")
+      create_players("DEF", rand(5) + 4, "fanduel")
 
-      Projection.optimal_lineup
+      lineup = Player.find(Projection.optimal_lineup)
+      expect(lineup.select{ |player| player.position == "QB" }.count).to eq(1)
+      expect(lineup.select{ |player| player.position == "RB" }.count).to eq(2)
+      expect(lineup.select{ |player| player.position == "WR" }.count).to eq(3)
+      expect(lineup.select{ |player| player.position == "TE" }.count).to eq(1)
+      expect(lineup.select{ |player| player.position == "K" }.count).to eq(1)
+      expect(lineup.select{ |player| player.position == "DEF" }.count).to eq(1)
+    end
+
+    it 'creates the optimal lineup' do
+      qb1 = create_player("QB", "fanduel", 16.5, 9000)
+      qb2 = create_player("QB", "fanduel", 15.5, 5000)
+      rb1 = create_player("RB", "fanduel", 10.5, 1000)
+      rb2 = create_player("RB", "fanduel", 25.5, 9000)
+      rb3 = create_player("RB", "fanduel", 15.5, 5000)
+      wr1 = create_player("WR", "fanduel", 16.5, 9000)
+      wr2 = create_player("WR", "fanduel", 10.5, 5000)
+      wr3 = create_player("WR", "fanduel", 2.5, 2000)
+      wr4 = create_player("WR", "fanduel", 12.5, 5000)
+      te1 = create_player("TE", "fanduel", 16.5, 9000)
+      te2 = create_player("TE", "fanduel", 0.5, 5000)
+      k1 = create_player("K", "fanduel", 16.1, 5200)
+      k2 = create_player("K", "fanduel", 16.1, 5000)
+      def1 = create_player("DEF", "fanduel", 10.5, 5000)
+      def2 = create_player("DEF", "fanduel", 10.4, 5000)
+
+      should_be = [qb2, rb1, rb2, wr1, wr2, wr3, te1, k2, def1]
+      lineup = Player.find(Projection.optimal_lineup)
+      binding.pry
+
+      #qb  rb  rb  wr  wr  wr  te  k  def
+      #5 , 1 , 9 , 9 , 5 , 5 , 9 , 5 , 5 = 53
     end
   end
 
@@ -114,7 +145,17 @@ end
 
 def create_players(position, number, platform)
   for i in 0..number
-    player = Fabricate(:player, position: position)
+    create_player(position, platform)
+  end
+end
+
+def create_player(position, platform, average=nil, salary=nil)
+  player = Fabricate(:player, position: position)
+  if salary && average
+    Fabricate(:projection, player: player, week: 1, platform: platform,
+              salary: salary, average: average)
+  else
     Fabricate(:projection, player: player, week: 1, platform: platform)
   end
+  player
 end
