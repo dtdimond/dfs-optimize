@@ -1,5 +1,5 @@
 class Projection < ActiveRecord::Base
-  belongs_to :player
+  belongs_to :player, foreign_key: "player_id"
 
   def self.refresh_data(platform="fanduel")
     Projection.populate_data(platform) if Projection.any_refresh?(platform)
@@ -10,7 +10,7 @@ class Projection < ActiveRecord::Base
     max ? max  : nil
   end
 
-  def self.optimal_lineup
+  def self.optimal_lineup(platform)
     #Setup
     best = Rglpk::Problem.new
     best.obj.dir = Rglpk::GLP_MAX
@@ -38,7 +38,7 @@ class Projection < ActiveRecord::Base
 
     #Get all players for the appropriate week/dfs site
     players = Player.joins(:projections).
-                     where(projections: { week: 1, platform: "fanduel" }).
+                     where(projections: { week: FFNerd.current_week, platform: platform }).
                      select("projections.*,players.*").
                      order(:position, :id)
 
@@ -87,7 +87,6 @@ class Projection < ActiveRecord::Base
     best.cols.each do |col|
       lineup_ids.push(col.name.to_i) if col.mip_val == 1
     end
-    binding.pry
     lineup_ids
   end
 
@@ -97,7 +96,6 @@ class Projection < ActiveRecord::Base
 
   private
   def self.populate_data(platform)
-    binding.pry
     week = FFNerd.daily_fantasy_league_info(platform).current_week
 
     ActiveRecord::Base.transaction do

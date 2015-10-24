@@ -77,20 +77,23 @@ describe Projection do
 
   describe 'optimal_lineup' do
     it 'sets a lineup with the appropriate number of slots filled' do
-      create_players("QB", rand(5) + 4, "fanduel")
-      create_players("RB", rand(5) + 4, "fanduel")
-      create_players("WR", rand(5) + 4, "fanduel")
-      create_players("TE", rand(5) + 4, "fanduel")
-      create_players("K", rand(5) + 4, "fanduel")
-      create_players("DEF", rand(5) + 4, "fanduel")
+      platform = "fanduel"
+      VCR.use_cassette 'projection/optimal_lineup' do
+        info = FFNerd.daily_fantasy_league_info(platform)
+        create_players("QB" , rand(5) + 4, platform)
+        create_players("RB" , rand(5) + 4, platform)
+        create_players("WR" , rand(5) + 4, platform)
+        create_players("TE" , rand(5) + 4, platform)
+        create_players("K"  , rand(5) + 4, platform)
+        create_players("DEF", rand(5) + 4, platform)
+        lineup = Player.find(Projection.optimal_lineup(platform))
 
-      lineup = Player.find(Projection.optimal_lineup)
-      expect(lineup.select{ |player| player.position == "QB" }.count).to eq(1)
-      expect(lineup.select{ |player| player.position == "RB" }.count).to eq(2)
-      expect(lineup.select{ |player| player.position == "WR" }.count).to eq(3)
-      expect(lineup.select{ |player| player.position == "TE" }.count).to eq(1)
-      expect(lineup.select{ |player| player.position == "K" }.count).to eq(1)
-      expect(lineup.select{ |player| player.position == "DEF" }.count).to eq(1)
+        info.roster_requirements.each do |requirements|
+          position = requirements.first
+          required_slots = requirements.second
+          expect(lineup.select{|player| player.position == position}.count).to eq(required_slots)
+        end
+      end
     end
 
     it 'creates the optimal lineup' do
@@ -110,12 +113,11 @@ describe Projection do
       def1 = create_player("DEF", "fanduel", 10.5, 5000)
       def2 = create_player("DEF", "fanduel", 10.4, 5000)
 
-      should_be = [qb2, rb1, rb2, wr1, wr2, wr3, te1, k2, def1]
-      lineup = Player.find(Projection.optimal_lineup)
-      binding.pry
-
-      #qb  rb  rb  wr  wr  wr  te  k  def
-      #5 , 1 , 9 , 9 , 5 , 5 , 9 , 5 , 5 = 53
+      VCR.use_cassette 'projection/optimal_lineup' do
+        lineup = Player.find(Projection.optimal_lineup("fanduel"))
+        should_be = [qb2, rb2, rb3, wr1, wr2, wr4, te1, k1, def1]
+        expect(lineup).to eq(should_be)
+      end
     end
   end
 
@@ -151,11 +153,14 @@ end
 
 def create_player(position, platform, average=nil, salary=nil)
   player = Fabricate(:player, position: position)
-  if salary && average
-    Fabricate(:projection, player: player, week: 1, platform: platform,
-              salary: salary, average: average)
-  else
-    Fabricate(:projection, player: player, week: 1, platform: platform)
+
+  VCR.use_cassette 'projection/current_week' do
+    if salary && average
+      Fabricate(:projection, player: player, week: FFNerd.current_week, platform: platform,
+                salary: salary, average: average)
+    else
+      Fabricate(:projection, player: player, week: FFNerd.current_week, platform: platform)
+    end
   end
   player
 end
