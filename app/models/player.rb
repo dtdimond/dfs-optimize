@@ -1,5 +1,5 @@
 class Player < ActiveRecord::Base
-  has_many :projections
+  has_many :projections, foreign_key: "player_id"
 
   def self.refresh_data
     Player.populate_data if Player.any_refresh?
@@ -15,7 +15,7 @@ class Player < ActiveRecord::Base
       Player.delete_all #reset all
       FFNerd.players.each do |player|
         Player.create(name: player.display_name, player_id: player.player_id,
-                      position: player.position, team: player.team)
+                      id: player.player_id, position: player.position, team: player.team)
       end
     end
   end

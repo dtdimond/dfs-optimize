@@ -18,7 +18,7 @@ bell = Player.create(name: "Leveon Bell", position: "RB", team: "PIT", player_id
 Projection.create(player: bell, salary: 8300, week: 1, average: 18.5,
                   min: 13.3, max: 21.0, platform: "fanduel")
 
-charles = Player.create(name: "Jamaal Charles", position: "RB", team: "KC", player_id: 3)
+charles = Player.create(name: "Jamaal Charles", position: "RB", team: "KC", player_id: 4)
 Projection.create(player: charles, salary: 7900, week: 1, average: 16.5,
                   min: 12.3, max: 19.2, platform: "fanduel")
 

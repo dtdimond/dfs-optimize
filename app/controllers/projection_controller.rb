@@ -1,0 +1,2 @@
+class ProjectionController < ApplicationController
+end
