@@ -1,0 +1,78 @@
+%section.main_page
+  .row
+    .col-md-4.col-md-offset-1
+      .row.top-row
+        .col-md-4
+          =button_to "Refresh Data", { action: :update, params: {platform: "draftkings"}}, class: "btn btn-success"
+        .col-md-8.align-bottom
+          %p Data Freshness:
+          = time_ago_in_words Projection.freshness if Projection.freshness
+      = form_tag(players_generate_lineup_path, method: :post) do
+        .row
+          .col-md-12
+            %h1.title Optimize Lineup
+            %hr
+        .row
+          .col-xs-12
+            .form-group.row
+              = label_tag "input1", "Input Num 1", class: "col-sm-4 form-control-label"
+              .col-sm-8
+                = text_field_tag "input3", nil, placeholder: 'options...', class: "form-control"
+            .form-group.row
+              = label_tag "input2", "Input Num 2", class: "col-sm-4 form-control-label"
+              .col-sm-8
+                = text_field_tag "input3", nil, placeholder: 'options...', class: "form-control"
+            .form-group.row
+              = label_tag "input3", "Input Num 3", class: "col-sm-4 form-control-label"
+              .col-sm-8
+                = text_field_tag "input3", nil, placeholder: 'options...', class: "form-control"
+        .row
+          .col-md-12
+            %label.radio-inline
+              = radio_button_tag :platform, :fanduel, true
+              Fanduel
+            %label.radio-inline
+              = radio_button_tag :platform, :draftkings
+              Draftkings
+            %label.radio-inline
+              = radio_button_tag :platform, :yahoo
+              Yahoo
+        .row
+          .col-md-12
+            %fieldset.form-group
+              %label(for="week")
+              %select.form-control(id="week")
+                %option 6
+                %option 7
+                %option 8
+        .row.btn-row
+          .col-md-4
+            =button_to "Optimal Lineup", players_generate_lineup_path, class: "btn btn-success"
+          .col-md-4
+            %button.btn.btn-primary.btn-block Unique Lineup
+          .col-md-4
+            %button.btn.btn-primary.btn-block Other Lineup
+    .col-md-6
+      - if @lineup
+        %h2 Fanduel Optimal Lineup
+        %br
+        %table.table
+          %thead.thead-inverse
+            %tr
+              %th Pos
+              %th Player
+              %th Projection
+              %th Minimum
+              %th Maximum
+              %th Team
+              %th Salary
+          %tbody
+            - @lineup.each_with_index do |player, i|
+              %tr
+                %td= player.position
+                %td= player.name
+                %td= player.projections.first.average
+                %td= player.projections.first.min
+                %td= player.projections.first.max
+                %td= player.team
+                %td= number_to_currency(player.projections.first.salary, precision: 0)

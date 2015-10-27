@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  root to: 'player#show'
+  root to: 'players#show'
   get 'ui(/:action)', controller: 'ui'
 
-  post '/player/update', to: 'player#update'
-  post '/player/generate_lineup', to: 'player#generate_lineup'
+  post '/players/update', to: 'players#update'
+  post '/players/generate_lineup', to: 'players#generate_lineup'
 end

@@ -43,7 +43,7 @@ describe Projection do
       Fabricate(:projection, platform: "fanduel", updated_at: too_new)
 
       VCR.use_cassette 'projection/refresh_data' do
-        Projection.refresh_data
+        Projection.refresh_data(proj.platform, proj.week)
       end
 
       expect(Projection.first.average).to eq(proj.average)
@@ -178,6 +178,9 @@ describe Projection do
   end
 
   describe ".construct_constraint_coefs" do
+    #This gets a bit ugly. Basically we have an additional row for each position
+    # constraint. This allows us to give a lower bound of num_players for that position
+    # and an upper bound of num_players + num_flex to give the option of a flex player.
     it 'makes the appropriate constraint coefficients matrix' do
       VCR.use_cassette 'projection/constraint_coefs' do
         league_info = FFNerd.daily_fantasy_league_info("fanduel")
@@ -190,20 +193,64 @@ describe Projection do
 
         coefs_matrix = Projection.construct_constraint_coefs(players, league_info)
         salaries = [9000, 5000]; qbs = [1, 0]; rbs = [0, 1]; wrs = tes = ks = defs = [0, 0]
-        expect(coefs_matrix).to eq(salaries + qbs + rbs + wrs + tes + ks + defs)
+        qbs_flex = qbs; rbs_flex = rbs; wrs_flex = tes_flex = ks_flex = defs_flex = [0, 0]
+        all_flex = [0, 1]
+        expect(coefs_matrix).to eq(salaries + qbs + qbs_flex + rbs + rbs_flex + wrs +
+                                   wrs_flex + tes + tes_flex + ks + ks_flex + defs +
+                                   defs_flex + all_flex)
       end
     end
   end
 
   describe ".init_solver" do
-    it 'initializes the solver and its rows' do
+    it 'initializes the solver and its rows for 0 flex positions (fanduel)' do
       VCR.use_cassette 'projection/constraint_coefs' do
         league_info = FFNerd.daily_fantasy_league_info("fanduel")
         lp_solver = Projection.init_solver(league_info)
-        expect(lp_solver.rows.count).to eq(7)
+        expect(lp_solver.rows.count).to eq(14)
         expect(lp_solver.rows.first.name).to eq("cost_constraint")
-        expect(lp_solver.rows[6].name).to eq("K_constraint")
+        expect(lp_solver.rows.first.bounds).to eq([Rglpk::GLP_UP, nil, 60000])
+        expect(lp_solver.rows[5].name).to eq("WR_constraint")
+        expect(lp_solver.rows[5].bounds).to eq([Rglpk::GLP_LO, 3, nil])
+        expect(lp_solver.rows[6].name).to eq("WR_constraint_flex")
+        expect(lp_solver.rows[6].bounds).to eq([Rglpk::GLP_UP, nil, 3])
+        expect(lp_solver.rows[13].name).to eq("num_flexable_constraint")
+        expect(lp_solver.rows[13].bounds).to eq([Rglpk::GLP_FX, 6, 6])
       end
+    end
+
+    it 'initializes the solver and its rows for 1 flex positions (draftkings)' do
+      VCR.use_cassette 'projection/draftkings_league_info' do
+        league_info = FFNerd.daily_fantasy_league_info("draftkings")
+        lp_solver = Projection.init_solver(league_info)
+        expect(lp_solver.rows.count).to eq(12)
+        expect(lp_solver.rows.first.name).to eq("cost_constraint")
+        expect(lp_solver.rows.first.bounds).to eq([Rglpk::GLP_UP, nil, 50000])
+        expect(lp_solver.rows[5].name).to eq("WR_constraint")
+        expect(lp_solver.rows[5].bounds).to eq([Rglpk::GLP_LO, 3, nil])
+        expect(lp_solver.rows[6].name).to eq("WR_constraint_flex")
+        expect(lp_solver.rows[6].bounds).to eq([Rglpk::GLP_UP, nil, 4])
+        expect(lp_solver.rows[11].name).to eq("num_flexable_constraint")
+        expect(lp_solver.rows[11].bounds).to eq([Rglpk::GLP_FX, 7, 7])
+      end
+    end
+  end
+
+  describe ".create_is_in_lineup_variables" do
+    it 'creates the appropriate columns' do
+      VCR.use_cassette 'projection/constraint_coefs' do
+        league_info = FFNerd.daily_fantasy_league_info("fanduel")
+        qb1 = create_player("QB", "fanduel", 16.5, 9000)
+        rb1 = create_player("RB", "fanduel", 15.5, 5000)
+        players = Player.joins(:projections).
+                     where(projections: { platform: "fanduel" }).
+                     select("projections.*,players.*").
+                     order(:position, :id)
+        solver = Projection.init_solver(league_info)
+        solver = Projection.create_is_in_lineup_variables(players, solver)
+        expect(solver.cols.count).to eq(2)
+
+       end
     end
   end
 end
