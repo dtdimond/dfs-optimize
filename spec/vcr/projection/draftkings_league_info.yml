@@ -19,7 +19,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Mon, 26 Oct 2015 19:09:37 GMT
+      - Tue, 27 Oct 2015 18:08:36 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -27,10 +27,10 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=dd978403f9e703ac0438a2ae0cd4e6d741445886577; expires=Tue, 25-Oct-16
-        19:09:37 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
+      - __cfduid=db2d0adedd3a0a4748d05000fd78efe421445969316; expires=Wed, 26-Oct-16
+        18:08:36 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
       Expires:
-      - Tue, 25 Oct 2016 19:09:37 GMT
+      - Wed, 26 Oct 2016 18:08:36 GMT
       Cache-Control:
       - public, max-age=31536000
       Pragma:
@@ -38,13 +38,13 @@ http_interactions:
       X-Powered-By:
       - PleskLin
       Cf-Cache-Status:
-      - MISS
+      - HIT
       Vary:
       - Accept-Encoding
       Server:
       - cloudflare-nginx
       Cf-Ray:
-      - 23b874e2dd91180a-MIA
+      - 23c058e4136707c1-MIA
     body:
       encoding: UTF-8
       string: '{"week":"4","platform":"Draft Kings","cap":50000,"rosterRequirements":{"QB":1,"RB":2,"WR":3,"TE":1,"DEF":1,"K":0,"FLEX":1},"flexPositions":["RB","WR","TE"],"developerNotes":"Projections
@@ -533,5 +533,5 @@ http_interactions:
         Zenner","team":"DET","salary":"3000","projections":{"conservative":{"projectedPoints":0.2,"bangForYourBuckScore":75000},"consensus":{"projectedPoints":0.3,"bangForYourBuckScore":33333.333},"aggressive":{"projectedPoints":0.3,"bangForYourBuckScore":33333.333}}},{"playerId":2933,"position":"RB","name":"Thomas
         Rawls","team":"SEA","salary":"3000","projections":{"conservative":{"projectedPoints":0.1,"bangForYourBuckScore":300000},"consensus":{"projectedPoints":4.2,"bangForYourBuckScore":170.068},"aggressive":{"projectedPoints":15.8,"bangForYourBuckScore":12.017}}}]}'
     http_version: 
-  recorded_at: Mon, 26 Oct 2015 19:09:37 GMT
+  recorded_at: Tue, 27 Oct 2015 18:08:37 GMT
 recorded_with: VCR 2.9.2

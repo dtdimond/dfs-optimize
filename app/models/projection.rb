@@ -1,8 +1,8 @@
 class Projection < ActiveRecord::Base
   belongs_to :player, foreign_key: "player_id"
 
-  def self.refresh_data(platform="fanduel", week=nil)
-    Projection.populate_data(platform, week) if Projection.any_refresh?(platform, week)
+  def self.refresh_data(platform="fanduel")
+    Projection.populate_data(platform) if Projection.any_refresh?(platform)
   end
 
   def self.freshness
@@ -46,8 +46,8 @@ class Projection < ActiveRecord::Base
   end
 
   private
-  def self.populate_data(platform, week=nil)
-    week = FFNerd.daily_fantasy_league_info(platform).current_week unless week
+  def self.populate_data(platform)
+    week = FFNerd.daily_fantasy_league_info(platform).current_week
 
     ActiveRecord::Base.transaction do
       Projection.delete_all("platform = '#{platform}' AND week = '#{week}'")
@@ -62,8 +62,8 @@ class Projection < ActiveRecord::Base
     end
   end
 
-  def self.any_refresh?(platform, week=nil)
-    week = FFNerd.daily_fantasy_league_info(platform).current_week unless week
+  def self.any_refresh?(platform)
+    week = FFNerd.daily_fantasy_league_info(platform).current_week
     records = Projection.where("platform = '#{platform}' AND week = '#{week}'")
     records.each do |proj|
       return true if proj.refresh?
@@ -73,38 +73,6 @@ class Projection < ActiveRecord::Base
     records.any? ? false : true
   end
 
-  #Setup cost/position constraint coefficients (lhs)
-  def self.construct_constraint_coefs(players, league_info)
-    position_coefs = Hash.new
-    position_flex_coefs = Hash.new
-    cost_coefs = []
-    all_flex_coefs = []
-
-    players.each_with_index do |player, j|
-      cost_coefs.push(player.salary)
-      league_info.roster_requirements.each_with_index do |roster, i|
-        if roster.second > 0
-          #First for min constraint
-          position_coefs[roster.first] = [] if j == 0
-          position_coefs[roster.first].push(player.position == roster.first ? 1 : 0)
-
-          #Second for max constraint (flex possibility)
-          position_flex_coefs[roster.first] = [] if j == 0
-          position_flex_coefs[roster.first].push(player.position == roster.first ? 1 : 0)
-        end
-      end
-      all_flex_coefs.push(["RB","WR","TE"].include?(player.position) ? 1 : 0)
-    end
-
-    constraint_matrix = [cost_coefs]
-    position_coefs.zip position_flex_coefs do |position, flex_position|
-      constraint_matrix = [constraint_matrix, position.second]
-      constraint_matrix = [constraint_matrix, flex_position.second]
-    end
-    constraint_matrix = [constraint_matrix, all_flex_coefs]
-    constraint_matrix.flatten
-
-  end
 
   #Setup the constraint functions (rhs)
   def self.init_solver(league_info)
@@ -156,5 +124,36 @@ class Projection < ActiveRecord::Base
       end
     end
     lp_solver
+  end
+
+  #Setup cost/position constraint coefficients (lhs)
+  def self.construct_constraint_coefs(players, league_info)
+    position_coefs = Hash.new
+    position_flex_coefs = Hash.new
+    cost_coefs = []
+    all_flex_coefs = []
+
+    players.each_with_index do |player, j|
+      cost_coefs.push(player.salary)
+      league_info.roster_requirements.each_with_index do |roster, i|
+        if roster.second > 0 && roster.first != "FLEX"
+          #First for min constraint
+          position_coefs[roster.first] = [] if j == 0
+          position_coefs[roster.first].push(player.position == roster.first ? 1 : 0)
+
+          #Second for max constraint (flex possibility)
+          position_flex_coefs[roster.first] = [] if j == 0
+          position_flex_coefs[roster.first].push(player.position == roster.first ? 1 : 0)
+        end
+      end
+      all_flex_coefs.push(["RB","WR","TE"].include?(player.position) ? 1 : 0)
+    end
+
+    constraint_matrix = [cost_coefs]
+    position_coefs.zip position_flex_coefs do |position, flex_position|
+      constraint_matrix = [constraint_matrix, position.second]
+      constraint_matrix = [constraint_matrix, flex_position.second]
+    end
+    [constraint_matrix, all_flex_coefs].flatten
   end
 end

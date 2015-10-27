@@ -101,50 +101,50 @@ describe Projection do
     end
 
     it 'creates the optimal lineup for fanduel' do
-      qb1 = create_player("QB", "fanduel", 16.5, 9000)
-      qb2 = create_player("QB", "fanduel", 15.5, 5000)
-      rb1 = create_player("RB", "fanduel", 10.5, 1000)
-      rb2 = create_player("RB", "fanduel", 25.5, 9000)
-      rb3 = create_player("RB", "fanduel", 15.5, 5000)
-      wr1 = create_player("WR", "fanduel", 16.5, 9000)
-      wr2 = create_player("WR", "fanduel", 10.5, 5000)
-      wr3 = create_player("WR", "fanduel", 2.5, 2000)
-      wr4 = create_player("WR", "fanduel", 12.5, 5000)
-      te1 = create_player("TE", "fanduel", 16.5, 9000)
-      te2 = create_player("TE", "fanduel", 0.5, 5000)
-      k1 = create_player("K", "fanduel", 16.1, 5200)
-      k2 = create_player("K", "fanduel", 16.1, 5000)
-      def1 = create_player("DEF", "fanduel", 10.5, 5000)
-      def2 = create_player("DEF", "fanduel", 10.4, 5000)
-
       VCR.use_cassette 'projection/optimal_lineup' do
+        qb1 = create_player("QB", "fanduel", 16.5, 9000)
+        qb2 = create_player("QB", "fanduel", 15.5, 5000)
+        rb1 = create_player("RB", "fanduel", 10.5, 1000)
+        rb2 = create_player("RB", "fanduel", 25.5, 9000)
+        rb3 = create_player("RB", "fanduel", 15.5, 5000)
+        wr1 = create_player("WR", "fanduel", 16.5, 9000)
+        wr2 = create_player("WR", "fanduel", 10.5, 5000)
+        wr3 = create_player("WR", "fanduel", 2.5, 2000)
+        wr4 = create_player("WR", "fanduel", 12.5, 5000)
+        te1 = create_player("TE", "fanduel", 16.5, 9000)
+        te2 = create_player("TE", "fanduel", 0.5, 5000)
+        k1 = create_player("K", "fanduel", 16.1, 5200)
+        k2 = create_player("K", "fanduel", 16.1, 5000)
+        def1 = create_player("DEF", "fanduel", 10.5, 5000)
+        def2 = create_player("DEF", "fanduel", 10.4, 5000)
+
         lineup = Player.find(Projection.optimal_lineup("fanduel"))
         should_be = [qb2, rb2, rb3, wr1, wr2, wr4, te1, k1, def1]
         expect(lineup).to eq(should_be)
       end
     end
 
-#    it 'creates the optimal lineup for draftkings' do
-#      qb1 = create_player("QB", "draftkings", 16.5, 9000)
-#      qb2 = create_player("QB", "draftkings", 15.5, 5000)
-#      rb1 = create_player("RB", "draftkings", 10.5, 1000)
-#      rb2 = create_player("RB", "draftkings", 25.5, 9000)
-#      rb3 = create_player("RB", "draftkings", 15.5, 5000)
-#      wr1 = create_player("WR", "draftkings", 16.5, 9000)
-#      wr2 = create_player("WR", "draftkings", 10.5, 5000)
-#      wr3 = create_player("WR", "draftkings", 2.5, 2000)
-#      wr4 = create_player("WR", "draftkings", 12.5, 5000)
-#      te1 = create_player("TE", "draftkings", 16.5, 9000)
-#      te2 = create_player("TE", "draftkings", 0.5, 5000)
-#      def1 = create_player("DEF", "draftkings", 10.5, 5000)
-#      def2 = create_player("DEF", "draftkings", 10.4, 5000)
-#
-#      VCR.use_cassette 'projection/optimal_lineup' do
-#        lineup = Player.find(Projection.optimal_lineup("draftkings"))
-#        should_be = [qb2, rb2, rb3, wr1, wr2, wr4, te1, k1, def1]
-#        expect(lineup).to eq(should_be)
-#      end
-#    end
+    it 'creates the optimal lineup for draftkings' do
+      VCR.use_cassette 'projection/optimal_lineup_draftkings' do
+        qb1 = create_player("QB", "draftkings", 16.5, 9000)
+        qb2 = create_player("QB", "draftkings", 15.5, 5000)
+        rb1 = create_player("RB", "draftkings", 10.5, 1000)
+        rb2 = create_player("RB", "draftkings", 25.5, 9000)
+        rb3 = create_player("RB", "draftkings", 15.5, 5000)
+        wr1 = create_player("WR", "draftkings", 16.5, 9000)
+        wr2 = create_player("WR", "draftkings", 10.5, 5000)
+        wr3 = create_player("WR", "draftkings", 2.5, 2000)
+        wr4 = create_player("WR", "draftkings", 12.5, 5000)
+        te1 = create_player("TE", "draftkings", 16.5, 9000)
+        te2 = create_player("TE", "draftkings", 0.5, 5000)
+        def1 = create_player("DEF", "draftkings", 10.5, 5000)
+        def2 = create_player("DEF", "draftkings", 10.4, 5000)
+
+        lineup = Player.find(Projection.optimal_lineup("draftkings"))
+        should_be = [qb2, rb1, rb2, rb3, wr1, wr3, wr4, te1, def1]
+        expect(lineup).to eq(should_be)
+      end
+    end
 
     it 'returns [] if there is no data' do
       VCR.use_cassette 'projection/optimal_lineup' do
@@ -263,16 +263,13 @@ end
 
 def create_player(position, platform, average=nil, salary=nil)
   player = Fabricate(:player, position: position)
+  week = FFNerd.daily_fantasy_league_info(platform).current_week
 
-  VCR.use_cassette 'projection/current_week' do
-    week = FFNerd.daily_fantasy_league_info(platform).current_week
-
-    if salary && average
-      Fabricate(:projection, player: player, week: week, platform: platform,
-                salary: salary, average: average)
-    else
-      Fabricate(:projection, player: player, week: week, platform: platform)
-    end
+  if salary && average
+    Fabricate(:projection, player: player, week: week, platform: platform,
+              salary: salary, average: average)
+  else
+    Fabricate(:projection, player: player, week: week, platform: platform)
   end
   player
 end

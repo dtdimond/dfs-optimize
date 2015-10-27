@@ -3,7 +3,7 @@
     .col-md-4.col-md-offset-1
       .row.top-row
         .col-md-4
-          =button_to "Refresh Data", { action: :update, params: {platform: "draftkings"}}, class: "btn btn-success"
+          =button_to "Refresh Data", { action: :update, params: {platform: "fanduel"}}, class: "btn btn-success"
         .col-md-8.align-bottom
           %p Data Freshness:
           = time_ago_in_words Projection.freshness if Projection.freshness
@@ -41,10 +41,7 @@
           .col-md-12
             %fieldset.form-group
               %label(for="week")
-              %select.form-control(id="week")
-                %option 6
-                %option 7
-                %option 8
+              =select_tag "week", options_for_select([6,7,8]), class: "form-control"
         .row.btn-row
           .col-md-4
             =button_to "Optimal Lineup", players_generate_lineup_path, class: "btn btn-success"
@@ -67,6 +64,7 @@
               %th Team
               %th Salary
           %tbody
+            - proj_total = 0
             - @lineup.each_with_index do |player, i|
               %tr
                 %td= player.position
@@ -76,3 +74,8 @@
                 %td= player.projections.first.max
                 %td= player.team
                 %td= number_to_currency(player.projections.first.salary, precision: 0)
+              - proj_total += player.projections.first.average
+            %tr
+              %td Max
+              %td Max
+              %td= number_with_precision(proj_total, precision: 2)
