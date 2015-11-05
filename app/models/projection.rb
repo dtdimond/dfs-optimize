@@ -82,10 +82,9 @@ class Projection < ActiveRecord::Base
         min = proj.projections["conservative"]["projected_points"]
         inserts.push "('#{week}','#{platform}','#{proj.salary}','#{proj.player_id}',
                        '#{avg}','#{min}','#{max}','#{Time.now.utc}','#{Time.now.utc}')"
-
-        #Projection.create(week: week, platform: platform, salary: proj.salary,
-                          #player_id: proj.player_id, average: avg, min: min, max: max)
       end
+
+      #Bulk insert - faster than activerecord creates
       conn = ActiveRecord::Base.connection
       sql = "INSERT INTO projections (week, platform, salary, player_id,
             average, min, max, created_at, updated_at) VALUES #{inserts.join(",")}"

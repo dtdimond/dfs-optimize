@@ -13,10 +13,18 @@ class Player < ActiveRecord::Base
   def self.populate_data
     ActiveRecord::Base.transaction do
       Player.delete_all #reset all
+
+      inserts = []
       FFNerd.players.each do |player|
-        Player.create(name: player.display_name, player_id: player.player_id,
-                      id: player.player_id, position: player.position, team: player.team)
+        inserts.push "('#{player.display_name.gsub("'","`")}','#{player.player_id}',
+                       '#{player.player_id}','#{player.position}','#{player.team}',
+                       '#{Time.now.utc}','#{Time.now.utc}')"
       end
+
+      conn = ActiveRecord::Base.connection
+      sql = "INSERT INTO players (name, player_id, id, position,
+            team, created_at, updated_at) VALUES #{inserts.join(",")}"
+      conn.execute sql
     end
   end
 
