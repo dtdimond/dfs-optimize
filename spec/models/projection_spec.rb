@@ -67,7 +67,7 @@ describe Projection do
       VCR.use_cassette 'projection/refresh_data' do
         proj_fd = Fabricate(:projection, platform: "fanduel", updated_at: not_too_new,
                             week: FFNerd.daily_fantasy_league_info("fanduel").current_week)
-        Projection.refresh_data("fanduel")
+        Projection.refresh_data
 
         expect(Projection.first.platform).to eq("draftkings")
         expect(Projection.second.updated_at).not_to be_near_to_time(proj_fd.updated_at, 30.seconds)
@@ -82,7 +82,7 @@ describe Projection do
   describe '.optimal_lineup' do
     it 'sets a lineup with the appropriate number of slots filled' do
       platform = "fanduel"
-      VCR.use_cassette 'projection/optimal_lineup' do
+      VCR.use_cassette 'projection/optimal_lineup1' do
         info = FFNerd.daily_fantasy_league_info(platform)
         create_players("QB" , rand(5) + 4, platform)
         create_players("RB" , rand(5) + 4, platform)
@@ -101,7 +101,7 @@ describe Projection do
     end
 
     it 'creates the optimal lineup for fanduel' do
-      VCR.use_cassette 'projection/optimal_lineup' do
+      VCR.use_cassette 'projection/optimal_lineup2' do
         qb1 = create_player("QB", "fanduel", 16.5, 9000)
         qb2 = create_player("QB", "fanduel", 15.5, 5000)
         rb1 = create_player("RB", "fanduel", 10.5, 1000)
@@ -147,7 +147,7 @@ describe Projection do
     end
 
     it 'returns [] if there is no data' do
-      VCR.use_cassette 'projection/optimal_lineup' do
+      VCR.use_cassette 'projection/optimal_lineup_empty' do
         lineup = Player.find(Projection.optimal_lineup("fanduel"))
         expect(lineup).to eq([])
       end
@@ -157,7 +157,7 @@ describe Projection do
   describe '.populate_data' do
     it 'populates the proj database' do
       VCR.use_cassette 'projection/populate_data' do
-        Projection.populate_data("fanduel")
+        Projection.populate_data("fanduel", 4)
       end
 
       expect(Projection.first.average).to eq(16.5)
@@ -165,7 +165,7 @@ describe Projection do
     end
   end
 
-  describe ".cache_refresh?" do
+  describe ".refresh?" do
     it 'returns false if updated_at is less than 60mins old' do
       proj = Fabricate(:projection, updated_at: too_new)
       expect(proj.refresh?).to be false
@@ -204,7 +204,7 @@ describe Projection do
 
   describe ".init_solver" do
     it 'initializes the solver and its rows for 0 flex positions (fanduel)' do
-      VCR.use_cassette 'projection/constraint_coefs' do
+      VCR.use_cassette 'projection/init_solver' do
         league_info = FFNerd.daily_fantasy_league_info("fanduel")
         lp_solver = Projection.init_solver(league_info)
         expect(lp_solver.rows.count).to eq(14)
@@ -220,7 +220,7 @@ describe Projection do
     end
 
     it 'initializes the solver and its rows for 1 flex positions (draftkings)' do
-      VCR.use_cassette 'projection/draftkings_league_info' do
+      VCR.use_cassette 'projection/init_solver_draftkings' do
         league_info = FFNerd.daily_fantasy_league_info("draftkings")
         lp_solver = Projection.init_solver(league_info)
         expect(lp_solver.rows.count).to eq(12)
@@ -238,7 +238,7 @@ describe Projection do
 
   describe ".create_is_in_lineup_variables" do
     it 'creates the appropriate columns' do
-      VCR.use_cassette 'projection/constraint_coefs' do
+      VCR.use_cassette 'projection/solver_lineup_vars' do
         league_info = FFNerd.daily_fantasy_league_info("fanduel")
         qb1 = create_player("QB", "fanduel", 16.5, 9000)
         rb1 = create_player("RB", "fanduel", 15.5, 5000)
@@ -251,6 +251,27 @@ describe Projection do
         expect(solver.cols.count).to eq(2)
 
        end
+    end
+  end
+
+  describe ".format_lineup" do
+    it 'formats the lineup ids into a useful hash' do
+      qb = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "QB"))
+      rb1 = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "RB"))
+      rb2 = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "RB"))
+      wr1 = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "WR"))
+      wr2 = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "WR"))
+      wr3 = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "WR"))
+      te = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "TE"))
+      k = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "K"))
+      def1 = Fabricate(:projection, week: 1, platform: "fanduel", player: Fabricate(:player, position: "DEF"))
+
+      lineup_ids = [qb.player.id, rb1.player.id, rb2.player.id, wr1.player.id,
+                    wr2.player.id, wr3.player.id, te.player.id, k.player.id, def1.player.id]
+      cleaned_lineup = Projection.format_lineup(lineup_ids, "fanduel", 1)
+      expect(cleaned_lineup.length).to eq(9)
+      expect(cleaned_lineup.first[:position]).to eq("QB")
+      expect(cleaned_lineup.last[:position]).to eq("DEF")
     end
   end
 end

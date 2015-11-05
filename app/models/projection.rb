@@ -1,8 +1,9 @@
 class Projection < ActiveRecord::Base
   belongs_to :player, foreign_key: "player_id"
 
-  def self.refresh_data(platform="fanduel")
-    Projection.populate_data(platform) if Projection.any_refresh?(platform)
+  def self.refresh_data(platform="fanduel", week=nil)
+    week = FFNerd.daily_fantasy_league_info(platform).current_week unless week
+    Projection.populate_data(platform, week) if Projection.any_refresh?(platform, week)
   end
 
   def self.freshness
@@ -10,7 +11,7 @@ class Projection < ActiveRecord::Base
     max ? max  : nil
   end
 
-  def self.optimal_lineup(platform, week=nil)
+  def self.optimal_lineup(platform, week=nil, type="optimal")
     #Setup
     league_info = FFNerd.daily_fantasy_league_info(platform)
     week = league_info.current_week unless week
@@ -20,13 +21,20 @@ class Projection < ActiveRecord::Base
                      order(:position, :id)
     return [] if players.empty? #abort if no data
 
+    #players = players.reject{|player| player.name == "Alshon Jeffery"}
+    #players = players.reject{|player| player.team == "MIA"}
+
     #Init solver
     lp_solver = init_solver(league_info)
     lp_solver = Projection.create_is_in_lineup_variables(players, lp_solver)
 
     #Setup objective function (max projections)
     objective_coefs = []
-    players.each {|player| objective_coefs.push(player.average) }
+    players.each do |player|
+      objective_coefs.push(player.average) if type == "optimal"
+      objective_coefs.push(player.max) if type == "ceiling"
+      objective_coefs.push(player.min) if type == "floor"
+    end
     lp_solver.obj.coefs = objective_coefs
 
     #Put all constraint coefficients into solver
@@ -41,29 +49,51 @@ class Projection < ActiveRecord::Base
     lineup_ids
   end
 
+  #Takes the lineup_ids from the optimal lineup generator
+  #and turns it into an array of hashes useful for the view template
+  def self.format_lineup(lineup_ids, platform, week)
+    lineup = Player.find(lineup_ids)
+    desired_order = ["QB","RB","WR","TE","K","DEF"]
+    lineup.sort_by! { |x| desired_order.index x.position }
+
+    #Setup instance vars for the view
+    cleaned_lineup = []
+    lineup.each do |player|
+      projection = player.projections.where(platform: platform, week: week).first
+      cleaned_lineup.push({position: player.position, name: player.name,
+                           projection: projection, team: player.team})
+    end
+
+    cleaned_lineup
+  end
+
   def refresh?
     updated_at && updated_at > 60.minutes.ago ? false : true
   end
 
   private
-  def self.populate_data(platform)
-    week = FFNerd.daily_fantasy_league_info(platform).current_week
-
+  def self.populate_data(platform, week)
     ActiveRecord::Base.transaction do
       Projection.delete_all("platform = '#{platform}' AND week = '#{week}'")
+      inserts = []
       FFNerd.daily_fantasy_projections(platform).each do |proj|
         avg = proj.projections["consensus"]["projected_points"]
         max = proj.projections["aggressive"]["projected_points"]
         min = proj.projections["conservative"]["projected_points"]
+        inserts.push "('#{week}','#{platform}','#{proj.salary}','#{proj.player_id}',
+                       '#{avg}','#{min}','#{max}','#{Time.now.utc}','#{Time.now.utc}')"
 
-        Projection.create(average: avg, week: week, platform: platform, salary: proj.salary,
-                          player_id: proj.player_id, average: avg, min: min, max: max)
+        #Projection.create(week: week, platform: platform, salary: proj.salary,
+                          #player_id: proj.player_id, average: avg, min: min, max: max)
       end
+      conn = ActiveRecord::Base.connection
+      sql = "INSERT INTO projections (week, platform, salary, player_id,
+            average, min, max, created_at, updated_at) VALUES #{inserts.join(",")}"
+      conn.execute sql
     end
   end
 
-  def self.any_refresh?(platform)
-    week = FFNerd.daily_fantasy_league_info(platform).current_week
+  def self.any_refresh?(platform, week)
     records = Projection.where("platform = '#{platform}' AND week = '#{week}'")
     records.each do |proj|
       return true if proj.refresh?
@@ -73,7 +103,7 @@ class Projection < ActiveRecord::Base
     records.any? ? false : true
   end
 
-
+  #Methods for setting up the rglpk solver
   #Setup the constraint functions (rhs)
   def self.init_solver(league_info)
     lp_solver = Rglpk::Problem.new

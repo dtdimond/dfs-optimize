@@ -19,7 +19,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Tue, 27 Oct 2015 18:08:33 GMT
+      - Thu, 05 Nov 2015 19:05:53 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -27,10 +27,10 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=d784f8af2e6d30344e2dc54d0a1c60cfe1445969313; expires=Wed, 26-Oct-16
-        18:08:33 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
+      - __cfduid=de22404257f33e27cbd710f870112f6781446750353; expires=Fri, 04-Nov-16
+        19:05:53 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
       Expires:
-      - Wed, 26 Oct 2016 18:08:33 GMT
+      - Fri, 04 Nov 2016 19:05:53 GMT
       Cache-Control:
       - public, max-age=31536000
       Pragma:
@@ -44,7 +44,7 @@ http_interactions:
       Server:
       - cloudflare-nginx
       Cf-Ray:
-      - 23c058ce699517f2-MIA
+      - 240ad52f0a470326-MIA
     body:
       encoding: UTF-8
       string: '{"week":"4","platform":"FanDuel","cap":60000,"rosterRequirements":{"QB":1,"RB":2,"WR":3,"TE":1,"DEF":1,"K":1,"FLEX":0},"flexPositions":[],"developerNotes":"Projections
@@ -522,7 +522,7 @@ http_interactions:
         Zenner","team":"DET","salary":"4500","projections":{"conservative":{"projectedPoints":0.2,"bangForYourBuckScore":112500},"consensus":{"projectedPoints":0.25,"bangForYourBuckScore":72000},"aggressive":{"projectedPoints":0.25,"bangForYourBuckScore":72000}}},{"playerId":2933,"position":"RB","name":"Thomas
         Rawls","team":"SEA","salary":"6000","projections":{"conservative":{"projectedPoints":0.1,"bangForYourBuckScore":600000},"consensus":{"projectedPoints":3.9,"bangForYourBuckScore":394.477},"aggressive":{"projectedPoints":15.3,"bangForYourBuckScore":25.631}}}]}'
     http_version: 
-  recorded_at: Tue, 27 Oct 2015 18:08:33 GMT
+  recorded_at: Thu, 05 Nov 2015 19:05:53 GMT
 - request:
     method: get
     uri: http://www.fantasyfootballnerd.com/service/daily/json/test/fanduel
@@ -542,7 +542,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Tue, 27 Oct 2015 18:08:34 GMT
+      - Thu, 05 Nov 2015 19:05:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -550,10 +550,10 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=d855569f22d5f0b01464afec13ae5b7c31445969314; expires=Wed, 26-Oct-16
-        18:08:34 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
+      - __cfduid=dd717b7e7fab7c82cc033c6ee20d85bed1446750354; expires=Fri, 04-Nov-16
+        19:05:54 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
       Expires:
-      - Wed, 26 Oct 2016 18:08:34 GMT
+      - Fri, 04 Nov 2016 19:05:54 GMT
       Cache-Control:
       - public, max-age=31536000
       Pragma:
@@ -567,7 +567,7 @@ http_interactions:
       Server:
       - cloudflare-nginx
       Cf-Ray:
-      - 23c058d527b00797-MIA
+      - 240ad530e243181c-MIA
     body:
       encoding: UTF-8
       string: '{"week":"4","platform":"FanDuel","cap":60000,"rosterRequirements":{"QB":1,"RB":2,"WR":3,"TE":1,"DEF":1,"K":1,"FLEX":0},"flexPositions":[],"developerNotes":"Projections
@@ -1045,7 +1045,7 @@ http_interactions:
         Zenner","team":"DET","salary":"4500","projections":{"conservative":{"projectedPoints":0.2,"bangForYourBuckScore":112500},"consensus":{"projectedPoints":0.25,"bangForYourBuckScore":72000},"aggressive":{"projectedPoints":0.25,"bangForYourBuckScore":72000}}},{"playerId":2933,"position":"RB","name":"Thomas
         Rawls","team":"SEA","salary":"6000","projections":{"conservative":{"projectedPoints":0.1,"bangForYourBuckScore":600000},"consensus":{"projectedPoints":3.9,"bangForYourBuckScore":394.477},"aggressive":{"projectedPoints":15.3,"bangForYourBuckScore":25.631}}}]}'
     http_version: 
-  recorded_at: Tue, 27 Oct 2015 18:08:34 GMT
+  recorded_at: Thu, 05 Nov 2015 19:05:53 GMT
 - request:
     method: get
     uri: http://www.fantasyfootballnerd.com/service/daily/json/test/fanduel
@@ -1065,7 +1065,7 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Tue, 27 Oct 2015 18:08:35 GMT
+      - Thu, 05 Nov 2015 19:05:54 GMT
       Content-Type:
       - application/json
       Transfer-Encoding:
@@ -1073,10 +1073,10 @@ http_interactions:
       Connection:
       - keep-alive
       Set-Cookie:
-      - __cfduid=df0ef10b854ae3ea63ebb407f67e4ab4a1445969315; expires=Wed, 26-Oct-16
-        18:08:35 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
+      - __cfduid=dfcc13a2a36b33ef408b97e0373a4a5951446750354; expires=Fri, 04-Nov-16
+        19:05:54 GMT; path=/; domain=.fantasyfootballnerd.com; HttpOnly
       Expires:
-      - Wed, 26 Oct 2016 18:08:35 GMT
+      - Fri, 04 Nov 2016 19:05:54 GMT
       Cache-Control:
       - public, max-age=31536000
       Pragma:
@@ -1090,7 +1090,7 @@ http_interactions:
       Server:
       - cloudflare-nginx
       Cf-Ray:
-      - 23c058dc73720329-MIA
+      - 240ad53280822eab-MIA
     body:
       encoding: UTF-8
       string: '{"week":"4","platform":"FanDuel","cap":60000,"rosterRequirements":{"QB":1,"RB":2,"WR":3,"TE":1,"DEF":1,"K":1,"FLEX":0},"flexPositions":[],"developerNotes":"Projections
@@ -1568,5 +1568,5 @@ http_interactions:
         Zenner","team":"DET","salary":"4500","projections":{"conservative":{"projectedPoints":0.2,"bangForYourBuckScore":112500},"consensus":{"projectedPoints":0.25,"bangForYourBuckScore":72000},"aggressive":{"projectedPoints":0.25,"bangForYourBuckScore":72000}}},{"playerId":2933,"position":"RB","name":"Thomas
         Rawls","team":"SEA","salary":"6000","projections":{"conservative":{"projectedPoints":0.1,"bangForYourBuckScore":600000},"consensus":{"projectedPoints":3.9,"bangForYourBuckScore":394.477},"aggressive":{"projectedPoints":15.3,"bangForYourBuckScore":25.631}}}]}'
     http_version: 
-  recorded_at: Tue, 27 Oct 2015 18:08:35 GMT
+  recorded_at: Thu, 05 Nov 2015 19:05:54 GMT
 recorded_with: VCR 2.9.2
