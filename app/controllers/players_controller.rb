@@ -10,6 +10,7 @@ class PlayersController < ApplicationController
 
     #Setup instance vars for the view
     @proj_total = 0; @min_total = 0; @max_total = 0; @salary_total = 0
+    @platform = params[:platform]
     @lineup.each do |player|
       @proj_total += player[:projection].average
       @max_total += player[:projection].max

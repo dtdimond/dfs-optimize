@@ -1,9 +1,10 @@
 %section.main_page
   .row
     .col-md-4.col-md-offset-1
-      .row.top-row
-        .col-md-12
-          %p= "Data Freshness: #{time_ago_in_words Projection.freshness if Projection.freshness} old."
+      /
+        .row.top-row
+          .col-md-12
+            %p= "Data Freshness: #{time_ago_in_words Projection.freshness if Projection.freshness} old."
       = form_tag(players_generate_lineup_path, method: :post) do
         .row
           .col-md-12
@@ -50,7 +51,7 @@
             =button_to "Get Lineup", players_generate_lineup_path, class: "btn btn-success"
     .col-md-6
       - if @lineup
-        %h2 Fanduel Optimal Lineup
+        %h2= "#{@platform.capitalize} Optimal Lineup"
         %br
         %table.table
           %thead.thead-inverse
