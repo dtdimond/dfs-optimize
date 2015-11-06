@@ -10,7 +10,7 @@ gem 'bootstrap', git: 'https://github.com/twbs/bootstrap-rubygem'
 gem 'bcrypt-ruby'
 gem 'bootstrap_form'
 gem 'font-awesome-rails'
-gem 'fantasy_football_nerd', '1.2.1'
+gem 'fantasy_football_nerd', '1.2.1', :path => 'vendor/'
 gem 'rglpk'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
