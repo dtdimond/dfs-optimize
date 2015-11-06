@@ -7,9 +7,14 @@ GIT
       sass (>= 3.4.19)
 
 PATH
-  remote: vendor/
+  remote: vendor/fantasy_football_nerd-1.2.1
   specs:
     fantasy_football_nerd (1.2.1)
+
+PATH
+  remote: vendor/heroku-rglpk-0.2.1
+  specs:
+    heroku-rglpk (0.2.1)
 
 GEM
   remote: https://rubygems.org/
@@ -226,6 +231,7 @@ DEPENDENCIES
   fantasy_football_nerd (= 1.2.1)!
   font-awesome-rails
   haml-rails
+  heroku-rglpk (= 0.2.1)!
   jbuilder (~> 1.2)
   jquery-rails
   pg
