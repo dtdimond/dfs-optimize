@@ -11,7 +11,7 @@ gem 'bcrypt-ruby'
 gem 'bootstrap_form'
 gem 'font-awesome-rails'
 gem 'fantasy_football_nerd', '1.2.1', :path => 'vendor/'
-gem 'rglpk'
+gem 'heroku-rglpk', :path => 'vendor/'
 
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
