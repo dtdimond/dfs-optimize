@@ -11,11 +11,6 @@ PATH
   specs:
     fantasy_football_nerd (1.2.1)
 
-PATH
-  remote: vendor/heroku-rglpk-0.2.1
-  specs:
-    heroku-rglpk (0.2.1)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -231,7 +226,6 @@ DEPENDENCIES
   fantasy_football_nerd (= 1.2.1)!
   font-awesome-rails
   haml-rails
-  heroku-rglpk (= 0.2.1)!
   jbuilder (~> 1.2)
   jquery-rails
   pg
