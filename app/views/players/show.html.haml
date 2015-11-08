@@ -82,6 +82,7 @@
               %td
               %td= number_to_currency(@salary_total, precision: 0)
       - else
-        %p How it works:
-        %p Using the projections from FantasyFootballNerd.com, this tool will generate the best possible lineup for each of the three main Daily Fantasy Football sites. Just choose from the options to the left and hit 'Get Lineup.'
-        %p Enjoy!
+        %h3 How does this work?
+        %br
+        %p Using the projections from FantasyFootballNerd.com, this tool will generate the best possible lineup for each of the three main Daily Fantasy Football sites. Just choose from the week/site and hit 'Get Lineup.' The projections will then be placed through a linear programming optimization process to obtain the best possible lineup given the salary constraints of the DFS site.
+        %p Note - FantasyFootballNerd only has data for upcoming weeks starting around Wednesday of that week. 
