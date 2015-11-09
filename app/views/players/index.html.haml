@@ -1,42 +1,23 @@
 %section.main_page
   .row
-    .col-md-4.col-md-offset-1
-      /
-        .row.top-row
-          .col-md-12
-            %p= "Data Freshness: #{time_ago_in_words Projection.freshness if Projection.freshness} old."
+    .col-md-4.col-md-offset-1.padding-left
       = form_tag(players_generate_lineup_path, method: :post) do
         .row
-          .col-md-12
+          .col-xs-12
             %h1.title Optimize Lineup
             %hr
         .row
-        /
-          .col-xs-12
-            .form-group.row
-              = label_tag "input1", "Input Num 1", class: "col-sm-4 form-control-label"
-              .col-sm-8
-                = text_field_tag "input3", nil, placeholder: 'options...', class: "form-control"
-            .form-group.row
-              = label_tag "input2", "Input Num 2", class: "col-sm-4 form-control-label"
-              .col-sm-8
-                = text_field_tag "input3", nil, placeholder: 'options...', class: "form-control"
-            .form-group.row
-              = label_tag "input3", "Input Num 3", class: "col-sm-4 form-control-label"
-              .col-sm-8
-                = text_field_tag "input3", nil, placeholder: 'options...', class: "form-control"
-        .row
-          .col-md-12
+          .col-xs-9
             %fieldset.form-group
               %label(for="week") Week
               =select_tag :week, options_for_select([9,10,11,12,13,14,15,16,17]), class: "form-control"
         .row
-          .col-md-12
+          .col-xs-9
             %fieldset.form-group
               %label(for="type") Lineup Type
               =select_tag :type, options_for_select(["optimal","ceiling","floor"]), class: "form-control"
-        .row
-          .col-md-12
+        .row.platform-choice
+          .col-xs-12
             %label.radio-inline
               = radio_button_tag :platform, :fanduel, true
               Fanduel
@@ -46,10 +27,20 @@
             %label.radio-inline
               = radio_button_tag :platform, :yahoo
               Yahoo
+        - Game.games_this_week.each do |all_games|
+          .row
+            .col-xs-12
+              %h5="#{all_games.first} Games"
+          .row
+            - all_games.second.each do |game|
+              .col-xs-5.col-xs-offset-1
+                .checkbox
+                  =check_box_tag("games[]", game, true)
+                  %label=game
         .row.btn-row
           .col-md-4
-            =button_to "Get Lineup", players_generate_lineup_path, class: "btn btn-success"
-    .col-md-6
+            =button_to "Get Lineup", players_generate_lineup_path, class: "btn btn-primary"
+    .col-md-6.padding-left
       - if @lineup
         %h2= "#{@platform.capitalize} Optimal Lineup"
         %br

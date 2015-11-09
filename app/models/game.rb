@@ -3,6 +3,16 @@ class Game < ActiveRecord::Base
     Game.populate_data if Game.any_refresh?
   end
 
+  def self.games_this_week
+    formatted_games = Hash.new
+    Game.where(week: FFNerd.current_week).each do |game|
+      day_of_week = game.date.strftime('%A')
+      formatted_games[day_of_week] = [] unless formatted_games[day_of_week]
+      formatted_games[day_of_week].push("#{game.away_team} @ #{game.home_team}")
+    end
+    formatted_games.sort.reverse.to_h
+  end
+
   def refresh?
     updated_at && updated_at > 60.minutes.ago ? false : true
   end

@@ -6,7 +6,6 @@ describe PlayersController do
   after { FFNerd.api_key = old_api_key }
 
   describe 'POST generate_lineup' do
-
     it 'sets @lineup in the correct order for fanduel' do
       VCR.use_cassette 'players_controller/generate_lineup_fanduel1' do
         post :generate_lineup, platform: "fanduel", week: 4, type: "optimal"
@@ -23,6 +22,7 @@ describe PlayersController do
         expect(assigns(:min_total)).not_to be_blank
         expect(assigns(:max_total)).not_to be_blank
         expect(assigns(:salary_total)).not_to be_blank
+        expect(assigns(:games)).not_to be_blank
       end
     end
 
@@ -31,6 +31,17 @@ describe PlayersController do
         post :generate_lineup, platform: "fanduel", week: 4, type: "optimal"
         expect(response).to render_template(:show)
       end
+    end
+  end
+
+  describe 'GET show' do
+    it 'sets @games' do
+      expect(assigns(:games)).not_to be_nil
+    end
+
+    it 'renders the show template' do
+      get :show
+      expect(response).to render_template(:show)
     end
   end
 end

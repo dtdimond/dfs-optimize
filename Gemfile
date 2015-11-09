@@ -11,7 +11,6 @@ gem 'bootstrap', git: 'https://github.com/twbs/bootstrap-rubygem'
 gem 'bootstrap_form'
 gem 'fantasy_football_nerd', '1.2.1', :path => 'vendor/fantasy_football_nerd-1.2.1'
 gem 'rglpk'
-gem 'bootstrap-switch-rails'
 
 gem 'jquery-rails'
 gem 'turbolinks'

@@ -5,6 +5,23 @@ describe Game do
   before { FFNerd.api_key = "test" }
   after { FFNerd.api_key = old_api_key }
 
+  describe ".games_this_week" do
+    it 'returns all the games for the current week' do
+      VCR.use_cassette 'game/returns_games_for_current_week' do
+        current_week = FFNerd.current_week
+        g1 = Fabricate(:game, week: current_week, date: "Nov-5-2015")
+        g2 = Fabricate(:game, week: current_week, date: "Nov-8-2015")
+        g3 = Fabricate(:game, week: current_week, date: "Nov-8-2015")
+        g4 = Fabricate(:game, week: current_week, date: "Nov-9-2015")
+        should_be = {"Thursday" => ["#{g1.away_team} @ #{g1.home_team}"],
+                     "Sunday" => ["#{g2.away_team} @ #{g2.home_team}",
+                     "#{g3.away_team} @ #{g3.home_team}"],
+                     "Monday" => ["#{g4.away_team} @ #{g4.home_team}"]}
+        expect(Game.games_this_week).to eq(should_be)
+      end
+    end
+  end
+
   describe ".refresh_data" do
     it 'gets all new game data if an existing game record is too old' do
       game = Fabricate(:game, updated_at: not_too_new)

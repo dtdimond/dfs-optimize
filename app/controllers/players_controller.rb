@@ -2,6 +2,7 @@ class PlayersController < ApplicationController
   def generate_lineup
     #Refresh data
     Player.refresh_data
+    Game.refresh_data
     Projection.refresh_data(params[:platform])
 
     #Set lineup vars
@@ -17,7 +18,11 @@ class PlayersController < ApplicationController
       @min_total += player[:projection].min
       @salary_total += player[:projection].salary
     end
+    binding.pry
 
-    render :show
+    render :index
+  end
+
+  def index
   end
 end
