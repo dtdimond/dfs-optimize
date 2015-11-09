@@ -35,8 +35,8 @@
             - all_games.second.each do |game|
               .col-xs-5.col-xs-offset-1
                 .checkbox
-                  =check_box_tag("games[]", game, true)
-                  %label=game
+                  =check_box_tag("games[]", game, true, id: "games_#{game}")
+                  %label(for="games_#{game}")=game
         .row.btn-row
           .col-md-4
             =button_to "Get Lineup", players_generate_lineup_path, class: "btn btn-primary"

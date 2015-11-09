@@ -54,7 +54,6 @@ GEM
     autoprefixer-rails (6.1.0)
       execjs
       json
-    bootstrap-switch-rails (3.3.3)
     bootstrap_form (2.3.0)
     builder (3.2.2)
     coderay (1.1.0)
@@ -219,7 +218,6 @@ PLATFORMS
 
 DEPENDENCIES
   bootstrap!
-  bootstrap-switch-rails
   bootstrap_form
   coffee-rails (~> 4.0.0)
   fabrication

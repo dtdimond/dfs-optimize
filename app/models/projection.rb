@@ -11,7 +11,7 @@ class Projection < ActiveRecord::Base
     max ? max  : nil
   end
 
-  def self.optimal_lineup(platform, week=nil, type="optimal")
+  def self.optimal_lineup(platform, week=nil, type="optimal", games=nil)
     #Setup
     league_info = FFNerd.daily_fantasy_league_info(platform)
     week = league_info.current_week unless week
@@ -21,8 +21,8 @@ class Projection < ActiveRecord::Base
                      order(:position, :id)
     return [] if players.empty? #abort if no data
 
-    #players = players.reject{|player| player.name == "Alshon Jeffery"}
-    #players = players.reject{|player| player.team == "MIA"}
+    #Remove players not on selected teams
+    players = players.select { |player| games.include? player.team } if games
 
     #Init solver
     lp_solver = init_solver(league_info)

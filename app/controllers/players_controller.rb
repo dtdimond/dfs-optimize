@@ -6,7 +6,8 @@ class PlayersController < ApplicationController
     Projection.refresh_data(params[:platform])
 
     #Set lineup vars
-    lineup_ids = Projection.optimal_lineup(params[:platform], params[:week], params[:type])
+    games = params[:games].map { |game| game.split(" @ ") }.flatten if params[:games]
+    lineup_ids = Projection.optimal_lineup(params[:platform], params[:week], params[:type], games)
     @lineup = Projection.format_lineup(lineup_ids, params[:platform], params[:week])
 
     #Setup instance vars for the view
@@ -18,7 +19,6 @@ class PlayersController < ApplicationController
       @min_total += player[:projection].min
       @salary_total += player[:projection].salary
     end
-    binding.pry
 
     render :index
   end
