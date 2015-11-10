@@ -11,12 +11,10 @@ describe Game do
         current_week = FFNerd.current_week
         g1 = Fabricate(:game, week: current_week, date: "Nov-5-2015")
         g2 = Fabricate(:game, week: current_week, date: "Nov-8-2015")
-        g3 = Fabricate(:game, week: current_week, date: "Nov-8-2015")
-        g4 = Fabricate(:game, week: current_week, date: "Nov-9-2015")
-        should_be = {"Thursday" => ["#{g1.away_team} @ #{g1.home_team}"],
-                     "Sunday" => ["#{g2.away_team} @ #{g2.home_team}",
-                     "#{g3.away_team} @ #{g3.home_team}"],
-                     "Monday" => ["#{g4.away_team} @ #{g4.home_team}"]}
+        g3 = Fabricate(:game, week: current_week, date: "Nov-9-2015")
+        should_be = {"Thursday (Nov - 5)" => ["#{g1.away_team} @ #{g1.home_team}"],
+                     "Sunday (Nov - 8)" => ["#{g2.away_team} @ #{g2.home_team}"],
+                     "Monday (Nov - 9)" => ["#{g3.away_team} @ #{g3.home_team}"]}
         expect(Game.games_this_week).to eq(should_be)
       end
     end
