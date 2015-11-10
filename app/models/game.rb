@@ -29,10 +29,12 @@ class Game < ActiveRecord::Base
                        '#{Time.now.utc}','#{Time.now.utc}')"
       end
 
-      conn = ActiveRecord::Base.connection
-      sql = "INSERT INTO games (id, week, date, home_team, away_team,
-            created_at, updated_at) VALUES #{inserts.join(",")}"
-      conn.execute sql
+      if inserts.any?
+        conn = ActiveRecord::Base.connection
+        sql = "INSERT INTO games (id, week, date, home_team, away_team,
+              created_at, updated_at) VALUES #{inserts.join(",")}"
+        conn.execute sql
+      end
     end
   end
 

@@ -21,10 +21,12 @@ class Player < ActiveRecord::Base
                        '#{Time.now.utc}','#{Time.now.utc}')"
       end
 
-      conn = ActiveRecord::Base.connection
-      sql = "INSERT INTO players (name, player_id, id, position,
-            team, created_at, updated_at) VALUES #{inserts.join(",")}"
-      conn.execute sql
+      if inserts.any?
+        conn = ActiveRecord::Base.connection
+        sql = "INSERT INTO players (name, player_id, id, position,
+              team, created_at, updated_at) VALUES #{inserts.join(",")}"
+        conn.execute sql
+      end
     end
   end
 

@@ -85,10 +85,12 @@ class Projection < ActiveRecord::Base
       end
 
       #Bulk insert - faster than activerecord creates
-      conn = ActiveRecord::Base.connection
-      sql = "INSERT INTO projections (week, platform, salary, player_id,
-            average, min, max, created_at, updated_at) VALUES #{inserts.join(",")}"
-      conn.execute sql
+      if inserts.any?
+        conn = ActiveRecord::Base.connection
+        sql = "INSERT INTO projections (week, platform, salary, player_id,
+              average, min, max, created_at, updated_at) VALUES #{inserts.join(",")}"
+        conn.execute sql
+      end
     end
   end
 
