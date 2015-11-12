@@ -10,22 +10,22 @@
           .col-xs-9
             %fieldset.form-group
               %label(for="week") Week
-              =select_tag :week, options_for_select([9,10,11,12,13,14,15,16,17]), class: "form-control"
+              =select_tag :week, options_for_select([9,10,11,12,13,14,15,16,17], params[:week]), class: "form-control"
         .row
           .col-xs-9
             %fieldset.form-group
               %label(for="type") Lineup Type
-              =select_tag :type, options_for_select(["optimal","ceiling","floor"]), class: "form-control"
+              =select_tag :type, options_for_select(["optimal","ceiling","floor"], params[:type]), class: "form-control"
         .row.platform-choice
           .col-xs-12
             %label.radio-inline
-              = radio_button_tag :platform, :fanduel, true
+              = radio_button_tag :platform, :fanduel, params[:platform] ? (params[:platform] == "fanduel") : true
               Fanduel
             %label.radio-inline
-              = radio_button_tag :platform, :draftkings
+              = radio_button_tag :platform, :draftkings, (params[:platform] == "draftkings")
               Draftkings
             %label.radio-inline
-              = radio_button_tag :platform, :yahoo
+              = radio_button_tag :platform, :yahoo, (params[:platform] == "yahoo")
               Yahoo
         - Game.games_this_week.each do |all_games|
           .row
@@ -35,7 +35,7 @@
             - all_games.second.each do |game|
               .col-xs-5.col-xs-offset-1
                 .checkbox
-                  =check_box_tag("games[]", game, true, id: "games_#{game}")
+                  =check_box_tag("games[]", game, params[:games] ? params[:games].include?(game) : true, id: "games_#{game}")
                   %label(for="games_#{game}")=game
         .row.btn-row
           .col-md-4
