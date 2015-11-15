@@ -10,7 +10,7 @@
           .col-xs-9
             %fieldset.form-group
               %label(for="week") Week
-              =select_tag :week, options_for_select([9,10,11,12,13,14,15,16,17], params[:week]), class: "form-control"
+              =select_tag :week, options_for_select([9,10,11,12,13,14,15,16,17], params[:week] ? params[:week] : 10), class: "form-control"
         .row
           .col-xs-9
             %fieldset.form-group
